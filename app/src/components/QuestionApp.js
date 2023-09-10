@@ -1,11 +1,12 @@
 import { Flex } from '@chakra-ui/react';
 import QuestionForm from './QuestionForm';
 import QuestionTable from './QuestionTable';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function QuestionApp() {
-  const [exampleFormData, setExampleFormData] = useState([
-    // Initial question data
+  // Initialize exampleFormData from localStorage or provide a default value
+  const initialData = JSON.parse(localStorage.getItem('exampleFormData')) || [
+    // Default initial question data
     {
       id: 1,
       title: 'Two Sum',
@@ -15,9 +16,15 @@ function QuestionApp() {
       complexity: 'Easy',
       link: 'https://leetcode.com/problems/two-sum/',
     },
-  ]);
+  ];
 
+  const [exampleFormData, setExampleFormData] = useState(initialData);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+
+  // Save exampleFormData to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('exampleFormData', JSON.stringify(exampleFormData));
+  }, [exampleFormData]);
 
   return (
     <Flex justify="center" align="flex-start" p={4}>
