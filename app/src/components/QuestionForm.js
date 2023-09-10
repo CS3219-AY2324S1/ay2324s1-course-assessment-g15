@@ -251,7 +251,6 @@ function QuestionForm({
             }
           />
         </FormControl>
-
         <Button
           type="button"
           colorScheme={validateAddUpdate() ? 'blue' : 'blackAlpha'}
@@ -260,7 +259,6 @@ function QuestionForm({
         >
           Add
         </Button>
-
         <Button
           type="button"
           colorScheme={validateAddUpdate() ? 'teal' : 'blackAlpha'}
@@ -269,7 +267,6 @@ function QuestionForm({
         >
           Update
         </Button>
-
         <Button
           type="button"
           colorScheme={validateDelete() ? 'red' : 'blackAlpha'}
