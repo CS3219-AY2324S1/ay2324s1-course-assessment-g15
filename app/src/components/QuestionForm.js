@@ -11,74 +11,108 @@ import {
   CheckboxGroup,
   useToast,
   NumberInputField,
-  NumberInput
+  NumberInput,
 } from '@chakra-ui/react';
 
 function QuestionForm({
-    exampleFormData,
-    setExampleFormData,
-    selectedQuestion,
-    setSelectedQuestion,
-  }) {
-    const [formData, setFormData] = useState({
-      id: '',
-      title: '',
-      description: '',
-      category: [],
-      complexity: '',
-    });
-  
-    const toast = useToast(); // Initialize the toast function
-  
-    useEffect(() => {
-      if (selectedQuestion) {
-        setFormData(selectedQuestion);
+  exampleFormData,
+  setExampleFormData,
+  selectedQuestion,
+  setSelectedQuestion,
+}) {
+  const [formData, setFormData] = useState({
+    id: '',
+    title: '',
+    description: '',
+    category: [],
+    complexity: '',
+  });
+
+  const CATEGORIES = [
+    "Algorithms",
+    "Arrays",
+    "Bit Manipulation",
+    "Brain Teaser",
+    "Databases",
+    "Data Structures",
+    "Hash Tables",
+    "Strings",
+    "Two Pointers"
+  ].sort();
+
+  const toast = useToast();
+
+  const [validAddUpdate, setValidAddUpdate] = useState(false);
+  const [validDelete, setValidDelete] = useState(false);
+
+  useEffect(() => {
+    if (selectedQuestion) {
+      setFormData(selectedQuestion);
+    }
+  }, [selectedQuestion]);
+
+  useEffect(() => {
+    if (validAddUpdate) {
+        setValidAddUpdate(true);
+    }
+  }, [validAddUpdate, formData]);
+
+  useEffect(() => {
+    if (validDelete) {
+        setValidDelete(true);
+    }
+  }, [validDelete, formData]);
+
+  const isIDInFormData = (id) => {
+    return exampleFormData.some((question) => question.id === id);
+  };
+
+  const validateAddUpdate = () => {
+    const requiredFields = ['id', 'title', 'description', 'category', 'complexity', 'link'];
+    const isFormValid = requiredFields.every((field) => formData[field] !== '' || formData.length === 0);
+    return isFormValid;
+  };
+
+  const validateDelete = () => {
+    return formData.id !== '';
+  };
+
+  const handleAddQuestion = () => {
+    if (validateAddUpdate()) {
+      if (isIDInFormData(formData.id)) {
+        toast({
+          title: 'Adding failed!',
+          description: 'Question with the same ID already exists.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
       }
-    }, [selectedQuestion]);
-  
-    const isIDInFormData = (id) => {
-      return exampleFormData.some((question) => question.id === id);
-    };
-  
-    const handleAddQuestion = () => {
-      if (formData.id && formData.title) {
-        if (isIDInFormData(formData.id)) {
-          toast({
-            title: 'Adding failed!',
-            description: 'Question with the same ID already exists.',
-            status: 'error',
-            duration: 5000, // Duration in milliseconds
-            isClosable: true,
-          });
-          return;
-        }
-        setExampleFormData([...exampleFormData, formData]);
-        clearFormData();
-      }
-      console.log(exampleFormData);
-    };
+      setExampleFormData([...exampleFormData, formData]);
+      clearFormData();
+    }
+  };
 
   const handleUpdateQuestion = () => {
-    if (formData.id && formData.title) {
+    if (validateAddUpdate()) {
       const updatedFormData = exampleFormData.map((question) =>
         question.id === formData.id ? formData : question
       );
       setExampleFormData(updatedFormData);
       setSelectedQuestion(null);
       clearFormData();
-      console.log(exampleFormData);
     }
   };
 
   const handleDeleteQuestion = () => {
-    if (formData.id) {
+    if (validateDelete()) {
       const updatedFormData = exampleFormData.filter(
         (question) => question.id !== formData.id
       );
       setExampleFormData(updatedFormData);
       setSelectedQuestion(null);
       clearFormData();
-      console.log(exampleFormData);
     }
   };
 
@@ -94,12 +128,17 @@ function QuestionForm({
 
   return (
     <Box p={4}>
-      <VStack spacing={4}>
+      <VStack spacing={3}>
         <FormControl id="questionId" isRequired>
         <FormLabel>Question ID</FormLabel>
         <NumberInput
-            value={formData.id}
-            onChange={(valueString) => setFormData({ ...formData, id: parseInt(valueString, 10) })}
+            value={formData.id === '' ? '' : formData.id}
+            onChange={(valueString) =>
+            setFormData({
+                ...formData,
+                id: valueString === '' ? '' : parseInt(valueString, 10),
+            })
+            }
         >
             <NumberInputField placeholder="Enter Question ID" />
         </NumberInput>
@@ -133,12 +172,13 @@ function QuestionForm({
             value={formData.categories}
             onChange={(values) => setFormData({ ...formData, categories: values })}
           >
-            <Checkbox value="Arrays">Arrays</Checkbox>
-            <br />
-            <Checkbox value="Strings">Strings</Checkbox>
-            <br />
-            <Checkbox value="Hash Tables">Hash Tables</Checkbox>
-            {/* Add more categories as needed */}
+            <Box maxH="200px" overflowY="scroll">
+                <VStack align='start'>
+                {CATEGORIES.map((category) => (
+                    <Checkbox key={category} value={category}>{category}</Checkbox>
+                ))}
+                </VStack>
+            </Box>
           </CheckboxGroup>
         </FormControl>
 
@@ -151,23 +191,48 @@ function QuestionForm({
               setFormData({ ...formData, complexity: e.target.value })
             }
           >
-            {/* Add your complexity options here */}
             <option value="Easy">Easy</option>
             <option value="Medium">Medium</option>
             <option value="Hard">Hard</option>
-            {/* Add more complexity levels as needed */}
           </Select>
         </FormControl>
 
-        <Button type="button" colorScheme="blue" onClick={handleAddQuestion}>
+        <FormControl id="questionLink" isRequired>
+          <FormLabel> Link </FormLabel>
+          <Input
+            type="textarea"
+            placeholder="Enter Link"
+            value={formData.link}
+            onChange={(e) =>
+              setFormData({ ...formData, link: e.target.value })
+            }
+          />
+        </FormControl>
+
+        <Button
+          type="button"
+          colorScheme={validateAddUpdate() ? 'blue' : 'blackAlpha'}
+          onClick={handleAddQuestion}
+          isDisabled={!validateAddUpdate()}
+        >
           Add
         </Button>
 
-        <Button type="button" colorScheme="teal" onClick={handleUpdateQuestion}>
+        <Button
+          type="button"
+          colorScheme={validateAddUpdate() ? 'teal' : 'blackAlpha'}
+          onClick={handleUpdateQuestion}
+          isDisabled={!validateAddUpdate()}
+        >
           Update
         </Button>
 
-        <Button type="button" colorScheme="red" onClick={handleDeleteQuestion}>
+        <Button
+          type="button"
+          colorScheme={validateDelete() ? 'red' : 'blackAlpha'}
+          onClick={handleDeleteQuestion}
+          isDisabled={!validateDelete()}
+        >
           Delete
         </Button>
       </VStack>

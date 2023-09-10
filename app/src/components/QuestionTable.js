@@ -1,12 +1,16 @@
 import React from 'react';
 import {
+  Tag,
+  TagLabel,
   Table,
+  Text,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
   chakra,
+  Wrap,
 } from '@chakra-ui/react';
 
 function QuestionTable({ questions, onSelectQuestion }) {
@@ -26,10 +30,22 @@ function QuestionTable({ questions, onSelectQuestion }) {
         {questions.map((question) => (
           <Tr key={question.id} onClick={() => onSelectQuestion(question)}>
             <Td>{question.id}</Td>
-            <Td>{question.title}</Td>
-            <Td>{question.description}</Td>
-            <Td>{question.categories.join(', ')}</Td>
-            <Td>{question.complexity}</Td>
+            <Td><Text fontSize='xl'>{question.title}</Text></Td>
+            <Td><Text fontSize='md'>{question.description}</Text></Td>
+            <Td>
+                <Wrap spacing={4}>
+                    {question.categories.map((category, index) => (
+                        <Tag key={index} variant='subtle' colorScheme='linkedin'>
+                            {category}
+                        </Tag>
+                    ))}
+                </Wrap>
+            </Td>
+            <Td>
+                <Tag variant='solid' size="lg"  colorScheme={question.complexity === 'Easy' ? 'green' : question.complexity === 'Medium' ? 'yellow' : 'red'}>
+                    <TagLabel>{question.complexity}</TagLabel>
+                </Tag>
+            </Td>
             <Td>
               <chakra.a href={question.link} target="_blank" rel="noopener noreferrer">
                 View
