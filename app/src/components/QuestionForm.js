@@ -144,6 +144,7 @@ function QuestionForm({
         `Question ${formData.id} has been deleted successfully.`,
         'success'
       );
+      return;
     }
     handleToast(
       'Deleting failed!',
