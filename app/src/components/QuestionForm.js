@@ -26,6 +26,7 @@ function QuestionForm({
     description: '',
     category: [],
     complexity: '',
+    link: '',
   });
 
   const CATEGORIES = [
@@ -53,13 +54,13 @@ function QuestionForm({
 
   useEffect(() => {
     if (validAddUpdate) {
-        setValidAddUpdate(true);
+      setValidAddUpdate(true);
     }
   }, [validAddUpdate, formData]);
 
   useEffect(() => {
     if (validDelete) {
-        setValidDelete(true);
+      setValidDelete(true);
     }
   }, [validDelete, formData]);
 
@@ -69,29 +70,43 @@ function QuestionForm({
 
   const validateAddUpdate = () => {
     const requiredFields = ['id', 'title', 'description', 'category', 'complexity', 'link'];
-    const isFormValid = requiredFields.every((field) => formData[field] !== '' || formData.length === 0);
-    return isFormValid;
+    return requiredFields.every((field) => formData[field] !== '' || formData.length === 0);
   };
 
   const validateDelete = () => {
     return formData.id !== '';
   };
 
+  const handleToast = (title, description, status) => {
+    toast({
+      title,
+      description,
+      status,
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
   const handleAddQuestion = () => {
     if (validateAddUpdate()) {
       if (isIDInFormData(formData.id)) {
-        toast({
-          title: 'Adding failed!',
-          description: 'Question with the same ID already exists.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
+        handleToast(
+          'Adding failed!',
+          'Question with the same ID already exists.',
+          'error'
+        );
         return;
       }
       setExampleFormData([...exampleFormData, formData]);
       clearFormData();
+      handleToast(
+        'Question added!',
+        `Question ${formData.id} has been added successfully.`,
+        'success'
+      );
+      return;
     }
+    handleToast('Adding failed!', 'Please fill in all required fields.', 'error');
   };
 
   const handleUpdateQuestion = () => {
@@ -102,7 +117,18 @@ function QuestionForm({
       setExampleFormData(updatedFormData);
       setSelectedQuestion(null);
       clearFormData();
+      handleToast(
+        'Question updated!',
+        `Question ${formData.id} has been updated successfully.`,
+        'success'
+      );
+      return;
     }
+    handleToast(
+      'Updating failed!',
+      'Please fill in all required fields.',
+      'error'
+    );
   };
 
   const handleDeleteQuestion = () => {
@@ -113,7 +139,17 @@ function QuestionForm({
       setExampleFormData(updatedFormData);
       setSelectedQuestion(null);
       clearFormData();
+      handleToast(
+        'Question deleted!',
+        `Question ${formData.id} has been deleted successfully.`,
+        'success'
+      );
     }
+    handleToast(
+      'Deleting failed!',
+      'Please fill in all required fields.',
+      'error'
+    );
   };
 
   const clearFormData = () => {
@@ -123,6 +159,7 @@ function QuestionForm({
       description: '',
       category: [],
       complexity: '',
+      link: '',
     });
   };
 
@@ -130,18 +167,18 @@ function QuestionForm({
     <Box p={4}>
       <VStack spacing={3}>
         <FormControl id="questionId" isRequired>
-        <FormLabel>Question ID</FormLabel>
-        <NumberInput
+          <FormLabel>Question ID</FormLabel>
+          <NumberInput
             value={formData.id === '' ? '' : formData.id}
             onChange={(valueString) =>
-            setFormData({
+              setFormData({
                 ...formData,
                 id: valueString === '' ? '' : parseInt(valueString, 10),
-            })
+              })
             }
-        >
+          >
             <NumberInputField placeholder="Enter Question ID" />
-        </NumberInput>
+          </NumberInput>
         </FormControl>
 
         <FormControl id="questionTitle" isRequired>
@@ -150,7 +187,9 @@ function QuestionForm({
             type="text"
             placeholder="Enter Question Title"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
         </FormControl>
 
@@ -170,14 +209,18 @@ function QuestionForm({
           <FormLabel>Question Category</FormLabel>
           <CheckboxGroup
             value={formData.categories}
-            onChange={(values) => setFormData({ ...formData, categories: values })}
+            onChange={(values) =>
+              setFormData({ ...formData, categories: values })
+            }
           >
             <Box maxH="200px" overflowY="scroll">
-                <VStack align='start'>
+              <VStack align="start">
                 {CATEGORIES.map((category) => (
-                    <Checkbox key={category} value={category}>{category}</Checkbox>
+                  <Checkbox key={category} value={category}>
+                    {category}
+                  </Checkbox>
                 ))}
-                </VStack>
+              </VStack>
             </Box>
           </CheckboxGroup>
         </FormControl>
