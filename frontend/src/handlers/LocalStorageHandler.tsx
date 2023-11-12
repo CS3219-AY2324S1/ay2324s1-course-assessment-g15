@@ -1,100 +1,65 @@
-import { MatchDataString, QuestionString, UserDataString } from "../Commons";
+import { QuestionString } from "../Commons";
+import { mockQuestions } from "../MockData";
 
-const USER_DATA_KEY = "userData";
-const MATCH_DATA_KEY = "matchData";
-const FILTER_DATA_KEY = "filterData";
+const QUESTION_DATA_KEY = "questionData";
+const QUESTION_ID_KEY = "questionId";
 
 class LocalStorageHandler {
 
-  // Commons
-  private static getData<T>(key: string): T | null {
-    try {
-      const storedData = localStorage.getItem(USER_DATA_KEY);
-      return storedData ? JSON.parse(storedData) : null;
-    } catch (error) {
-      return null
+  static getQuestions(): string | null {
+    return localStorage.getItem(QUESTION_DATA_KEY);
+  }
+
+  static saveQuestions(question: QuestionString[]) {
+    localStorage.setItem(QUESTION_DATA_KEY, JSON.stringify(question));
+  }
+
+  static loadQuestion(): QuestionString[] {
+    const questions = this.getQuestions()
+    if (questions === null) {
+      return mockQuestions;
     }
+    return JSON.parse(questions);
   }
 
-  // User Data
-  static storeUserData(userData: UserDataString) {
-    localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+  static addQuestion(question: QuestionString): void {
+    const currentQuestions = this.loadQuestion();
+    const newQuestion: QuestionString = { ...question, id: this.getQuestionId() };
+    this.advanceQuestionId();
+    const updatedQuestions = [...currentQuestions, newQuestion];
+    this.saveQuestions(updatedQuestions);
   }
 
-  static getUserData(): UserDataString | null {
-    return LocalStorageHandler.getData<UserDataString>(USER_DATA_KEY);
+  static deleteQuestion(id: string): void {
+    const questions: QuestionString[] = JSON.parse(this.getQuestions()!);
+    const updatedQuestions = questions.filter(qn => qn.id !== id);
+    this.saveQuestions(updatedQuestions);
   }
 
-  static clearUserData() {
-    localStorage.removeItem(USER_DATA_KEY);
-  }
-
-  // Match Data
-  static storeMatchData(matchData: any) {
-    const { user_id, other_user, room_id, question } = matchData;
-    const obj: { [key: string]: any } = {
-      user_id,
-      other_user,
-      room_id,
-      question
+  static updateQuestion(updatedQuestion: QuestionString) {
+    const currentQuestions = this.loadQuestion();
+    const indexToUpdate = currentQuestions.findIndex(qn => qn.id === updatedQuestion.id);
+    if (indexToUpdate === -1) {
+      return
     }
-    localStorage.setItem(MATCH_DATA_KEY, JSON.stringify(obj));
+    currentQuestions[indexToUpdate] = updatedQuestion;
+    this.saveQuestions(currentQuestions);
   }
 
-  static getMatchData(): MatchDataString | null {
-    return LocalStorageHandler.getData<MatchDataString>(MATCH_DATA_KEY);
+  // Newly added question ID starts from 100
+  static advanceQuestionId(): void {
+    const id = localStorage.getItem(QUESTION_ID_KEY)!;
+    const newId = (parseInt(id) + 1).toString()
+    localStorage.setItem(QUESTION_ID_KEY, newId);
   }
 
-  static isMatched(): boolean {
-    try {
-      return localStorage.getItem(MATCH_DATA_KEY) !== null;
-    } catch (e) {
-      return false;
+  static getQuestionId(): string {
+    const id = localStorage.getItem(QUESTION_ID_KEY);
+    if (id === null) {
+      localStorage.setItem(QUESTION_ID_KEY, '100');
+      return '100';
     }
-  }
-
-  static deleteMatchData() {
-    localStorage.removeItem(MATCH_DATA_KEY);
-  }
-
-  static updateMatchDataQuestion(newQuestion: QuestionString) {
-    const matchData = this.getMatchData();
-    if (matchData) {
-      matchData.question = newQuestion;
-      this.storeMatchData(matchData);
-    }
-  }
-
-  // Chat data
-  static storeChatData(key: string, chatData: any) {
-    localStorage.setItem(key, JSON.stringify(chatData));
-  }
-
-  static getChatData(key: string) {
-    return JSON.parse(localStorage.getItem(key) || '[]');
-  }
-
-  // Canvas data
-  static storeCanvasData(key: string, canvasData: any) {
-    localStorage.setItem(key, canvasData);
-  }
-
-  static getCanvasData(key: string) {
-    return localStorage.getItem(key);
-  }
-
-  // Filter data
-  static storeFilterData(categoryFilter: any, complexityFilter: any, filteredQuestions: any) {
-    const filterData = {
-      categoryFilter,
-      complexityFilter,
-      filteredQuestions,
-    };
-    localStorage.setItem(FILTER_DATA_KEY, JSON.stringify(filterData));
-  }
-
-  static clearAll() {
-    localStorage.clear();
+    return id;
   }
 }
 

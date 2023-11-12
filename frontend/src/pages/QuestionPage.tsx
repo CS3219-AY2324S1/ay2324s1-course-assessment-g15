@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Center, Flex, useToast } from '@chakra-ui/react';
-import QuestionRequestHandler from '../handlers/QuestionRequestHandler';
-import LocalStorageHandler from "../handlers/LocalStorageHandler";
 import QuestionDetailsModal from '../components/question/modals/QuestionDetailsModal';
 import EditQuestionModal from '../components/question/modals/EditQuestionModal';
 import AddQuestionModal from '../components/question/modals/AddQuestionModal';
 import QuestionTable from '../components/question/QuestionTable';
 import { QuestionCacheContext } from '../contexts/QuestionCacheContext';
 import QuestionValidator from '../models/question/QuestionValidator';
-import FilterBar from '../components/question/FilterBar';
-import NavigationBar from '../components/NavigationBar';
-import LoadingPage from './LoadingPage';
+import LocalStorageHandler from '../handlers/LocalStorageHandler';
 import { QuestionString, emptyQuestionString } from '../Commons';
-import { authChecker, showError, showSuccess } from '../Util';
+import { showError, showSuccess } from '../Util';
 
 let currentQuestion = emptyQuestionString;
 
@@ -21,35 +17,28 @@ const QuestionPage = () => {
   const [viewModalIsVisible, setViewModalIsVisible] = useState(false);
   const [editModalIsVisible, setEditModalIsVisible] = useState(false);
   const [questions, setQuestions] = useState<QuestionString[]>([]);
-  const [filteredQuestions, setFilteredQuestions] = useState(questions);
   const [questionCache, setQuestionCache] = useState<QuestionString>(emptyQuestionString);
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const ctxValue = { questionCache, setQuestionCache };
   const toast = useToast();
 
-  // Load Question on pageload
   useEffect(() => {
-    try {
-      QuestionRequestHandler.loadQuestions().then((questions: QuestionString[]) => {
-        setQuestions(questions);
-        setFilteredQuestions(questions);
-      });
-    } catch (error) {
-      showError('Failed to load questions', toast);
-    }
+    setQuestions(LocalStorageHandler.loadQuestion());
   }, []);
+
+  function validateNewQuestion() {
+    let validator = new QuestionValidator();
+    validator.validateEmptyFields(questionCache);
+    validator.checkDuplicates(questionCache, questions);
+  }
 
   function renderAddQuestionModal() {
     const addQuestionHandler = () => {
       try {
-        let validator = new QuestionValidator();
-        validator.validateEmptyFields(questionCache);
-        QuestionRequestHandler.createQuestionAndGetID(questionCache).then((id) => {
-          setQuestions([...questions, { ...questionCache, id: id }]);
-          setFilteredQuestions([...filteredQuestions, { ...questionCache, id: id }]);
-          setAddModalIsVisible(false);
-          showSuccess('Question added', toast);
-        });
+        validateNewQuestion();
+        setQuestions([...questions, { ...questionCache, id: LocalStorageHandler.getQuestionId() }]);
+        LocalStorageHandler.addQuestion(questionCache);
+        setAddModalIsVisible(false);
+        showSuccess("Question successfully added!", toast);
       } catch (e) {
         showError((e as Error).message, toast);
       }
@@ -72,9 +61,9 @@ const QuestionPage = () => {
 
     const handleDelete = (id: string) => {
       try {
-        QuestionRequestHandler.deleteQuestion(id);
+        LocalStorageHandler.deleteQuestion(id);
+        setQuestions(questions.filter(qn => qn.id !== id));
         showSuccess('Question deleted!', toast)
-        setFilteredQuestions(questions.filter(i => i.id !== id));
         setViewModalIsVisible(false);
       } catch (error) {
         showError('delete fail', toast);
@@ -97,11 +86,10 @@ const QuestionPage = () => {
       try {
         let validator = new QuestionValidator();
         validator.validateEmptyFields(questionCache);
-        QuestionRequestHandler.updateQuestion(questionCache).then(() => {
-          setQuestions(questions.map((q) => (q.id === questionCache.id ? questionCache : q)!));
-          setEditModalIsVisible(false);
-          showSuccess(`Question ${question.id} updated!`, toast)
-        });
+        LocalStorageHandler.updateQuestion(questionCache);
+        setQuestions(questions.map((q) => (q.id === questionCache.id ? questionCache : q)!));
+        setEditModalIsVisible(false);
+        showSuccess(`Question ${question.id} updated!`, toast)
       } catch (e) {
         showError((e as Error).message, toast);
       }
@@ -128,7 +116,7 @@ const QuestionPage = () => {
 
     return (
       <QuestionTable
-        data={filteredQuestions.sort((a, b) => parseInt(a.id) - parseInt(b.id))}
+        data={questions.sort((a, b) => parseInt(a.id) - parseInt(b.id))}
         viewDescriptionHandler={viewQuestionHandler}
         addBtnOnClick={() => {
           setQuestionCache(emptyQuestionString)
@@ -146,8 +134,7 @@ const QuestionPage = () => {
             {renderAddQuestionModal()}
             {renderQuestionDetailsModal()}
             {renderEditQuestionModal()}
-            {filteredQuestions.length > 0 && renderQuestionTable()}
-            {filteredQuestions.length == 0 && <p>No results found</p>}
+            {renderQuestionTable()}
           </Flex>
         </Center>
       </>

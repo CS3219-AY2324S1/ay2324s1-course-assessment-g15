@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Question from '../../models/question/Question';
 import { QuestionString } from '../../Commons';
 import { TableContainer, Table, Thead, Tr, Th, Tbody, Td, Button, Box } from '@chakra-ui/react';
-import LocalStorageHandler from "../../handlers/LocalStorageHandler";
 
 const QuestionTd = ({ value }: { value: string }) => {
   return (
@@ -25,8 +24,6 @@ const QuestionTable: React.FC<Props> =
   ({ data, viewDescriptionHandler, addBtnOnClick }) => {
     const [questionsList, setQuestionsList] = useState<Question[]>([]);
     const headings = ['Id', 'Title', 'Category', 'Complexity'];
-    const userData = LocalStorageHandler.getUserData();
-    const userRole = userData ? userData.role : null;
 
     // Hook to update questionsList
     useEffect(() => {
@@ -42,12 +39,9 @@ const QuestionTable: React.FC<Props> =
     return (
       <TableContainer>
         <Box>
-          {userRole === 'ADMIN' 
-          ? 
-          <Button colorScheme='blue' onClick={addBtnOnClick} m={5} float='right' isDisabled={userRole === 'ADMIN' ? false : true}>
+          <Button colorScheme='blue' onClick={addBtnOnClick} m={5} float='right'>
             Add
-          </Button> 
-          : <br/> }
+          </Button>
         </Box>
         <Table variant='simple' className='question-table' width={'70vw'}>
           <Thead>

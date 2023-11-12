@@ -28,9 +28,6 @@ interface Props {
 
 const QuestionDetailsModal: React.FC<Props> =
   ({ isVisible, data, closeHandler, editModalHandler: editHandler, deleteHandler }) => {
-    const userData = LocalStorageHandler.getUserData();
-    const userRole = userData ? userData.role : null;
-
     return (
       <>
         <Modal
@@ -70,19 +67,17 @@ const QuestionDetailsModal: React.FC<Props> =
               </Grid>
             </ModalBody>
             <ModalFooter>
-              {userRole === 'ADMIN'
-                &&
-                <Box>
-                  <Button colorScheme='red' mr={3} onClick={() => deleteHandler(data.id)}>
-                    Delete
-                  </Button>
-                  <Button colorScheme='cyan' mr={3} onClick={() => {
-                    closeHandler()
-                    editHandler();
-                  }}>
-                    Edit
-                  </Button>
-                </Box>}
+              <Box>
+                <Button colorScheme='red' mr={3} onClick={() => deleteHandler(data.id)}>
+                  Delete
+                </Button>
+                <Button colorScheme='cyan' mr={3} onClick={() => {
+                  closeHandler()
+                  editHandler();
+                }}>
+                  Edit
+                </Button>
+              </Box>
               <Button colorScheme='blue' mr={3} onClick={closeHandler}>
                 Close
               </Button>
