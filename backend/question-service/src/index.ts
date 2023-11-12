@@ -9,12 +9,13 @@ import router from './router'
 import session from 'express-session';
 
 const MongoDBStore = require('connect-mongodb-session')(session);
+const MONGO_URL = "mongodb+srv://peerprep15:CRFVdZNswqisruzv@peerprep.vmiy632.mongodb.net/?retryWrites=true&w=majority";
 
 dotenv.config();
 const app = express();
 
 const store = new MongoDBStore({
-    uri: process.env.MONGOURL,
+    uri: MONGO_URL,
     collection: 'sessions',
 });
 
@@ -26,7 +27,7 @@ app.use(session({
 }));
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true
 }));
@@ -41,12 +42,11 @@ server.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
 
-const MONGOURL = process.env.MONGOURL;
-
 mongoose.Promise = Promise;
-mongoose.connect(MONGOURL);
-mongoose.connection.on('error', () => {
+mongoose.connect(MONGO_URL);
+mongoose.connection.on('error', (e) => {
     console.log('MongoDB connection error.');
+    console.log(e);
     process.exit();
 });
 

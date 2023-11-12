@@ -11,11 +11,11 @@ import cookieParser from 'cookie-parser';
 import { initAdminProfile } from './utils/initAdmin';
 
 const MongoDBStore = require('connect-mongodb-session')(session);
-
+const MONGO_URL = "mongodb+srv://peerprep15:CRFVdZNswqisruzv@peerprep.vmiy632.mongodb.net/?retryWrites=true&w=majority";
 const app = express();
 
 const store = new MongoDBStore({
-    uri: process.env.MONGOURL,
+    uri: MONGO_URL,
     collection: 'sessions',
 });
 
@@ -35,13 +35,13 @@ app.use(session({
 }));
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true
 }));
 
 const server = http.createServer(app);
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 server.listen(port, () => {
     console.log(`Server listening on port ${port}`);
