@@ -6,7 +6,6 @@ import UserSecurity from "../components/user/userManagement/UserSecurity";
 import NavigationBar from '../components/NavigationBar';
 import LocalStorageHandler from '../handlers/LocalStorageHandler';
 import LoadingPage from "./LoadingPage";
-import UserHistory from "../components/user/userManagement/UserHistory";
 import { authChecker } from "../Util";
 
 const UserProfilePage = () => {
@@ -29,7 +28,6 @@ const UserProfilePage = () => {
         <Center alignItems={'center'} justifyItems={'center'} height={'100%'}>
           {currentMenuIndex === 0 && <UserPersonalInfo user={userDataString} />}
           {currentMenuIndex === 1 && <UserSecurity />}
-          {currentMenuIndex === 2 && <UserHistory />}
         </Center>
       </Box>
     );

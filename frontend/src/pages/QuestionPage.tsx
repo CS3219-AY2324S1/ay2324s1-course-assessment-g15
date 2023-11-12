@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Center, Flex, useToast } from '@chakra-ui/react';
 import QuestionRequestHandler from '../handlers/QuestionRequestHandler';
-import LocalStorageHandler from "../handlers/LocalStorageHandler";
 import QuestionDetailsModal from '../components/question/modals/QuestionDetailsModal';
 import EditQuestionModal from '../components/question/modals/EditQuestionModal';
 import AddQuestionModal from '../components/question/modals/AddQuestionModal';
 import QuestionTable from '../components/question/QuestionTable';
 import { QuestionCacheContext } from '../contexts/QuestionCacheContext';
 import QuestionValidator from '../models/question/QuestionValidator';
-import FilterBar from '../components/question/FilterBar';
 import NavigationBar from '../components/NavigationBar';
 import LoadingPage from './LoadingPage';
 import { QuestionString, emptyQuestionString } from '../Commons';
@@ -138,29 +136,12 @@ const QuestionPage = () => {
     );
   }
 
-  function renderFilterBar() {
-    function onFilter({ categories, complexity }: { categories: string[]; complexity: string }) {
-      const filtered = questions.filter((question) => {
-        const categoryFilter = !categories || categories.every(c => question.categories.includes(c));
-        const complexityFilter = !complexity || question.complexity === complexity;
-        return categoryFilter && complexityFilter;
-      });
-      setFilteredQuestions(filtered);
-      LocalStorageHandler.storeFilterData(categories, complexity, filtered);
-    }
-
-    return (
-      <FilterBar onFilter={onFilter} />
-    );
-  }
-
   function renderPageContent() {
     return (
       <>
         <NavigationBar index={0} />
         <Center pt={50}>
           <Flex flexDirection="column" alignItems="center">
-            {renderFilterBar()}
             {renderAddQuestionModal()}
             {renderQuestionDetailsModal()}
             {renderEditQuestionModal()}

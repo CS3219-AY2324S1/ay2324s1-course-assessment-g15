@@ -46,9 +46,6 @@ const NavigationBar: React.FC<Props> = ({ index }) => {
       {
         label: 'Questions',
         onClick: () => { navigate('../home') }
-      }, {
-        label: 'Collaborate',
-        onClick: () => { navigate('../collaborate') }
       }
     ]
 
