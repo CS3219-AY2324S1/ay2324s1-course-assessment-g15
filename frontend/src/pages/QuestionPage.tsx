@@ -141,7 +141,7 @@ const QuestionPage = () => {
     );
   }
 
-  function renderAuthenticatedPage() {
+  function renderQuestionPage() {
     return (
       <QuestionCacheContext.Provider value={ctxValue}>
         {renderPageContent()}
@@ -149,7 +149,7 @@ const QuestionPage = () => {
     );
   }
 
-  return renderAuthenticatedPage();
+  return renderQuestionPage();
 };
 
 export default QuestionPage;
