@@ -4,12 +4,12 @@ Strings for env variables will be given through the 'Sharing Assignment Private 
 ## User-service
 1. From the repo root, run `cd backend/user-service`.
 2. Create a .env file with a variable `POSTGRESURL`
-3. Start the service by running `npm run dev`
+3. Start the service by running `npm start`
 
 ## Question-service
 1. From the repo root, run `cd backend/question-service`.
 2. Create a .env with a variable `MONGOURL`
-3. Start the service by running `npm run dev`
+3. Start the service by running `npm start`
 
 ## Frontend
 1. From the repo root, run `cd frontend`.
