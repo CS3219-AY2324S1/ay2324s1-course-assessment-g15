@@ -50,14 +50,11 @@ const EditButton = ({ isEditing, setter }:
   );
 }
 
-
-// TODO: Authorization before page access
 const UserPersonalInfo = ({ user }: { user: UserDataString }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [name, setName] = useState(LocalStorageHandler.getUserData()!.username);
   const [email, setEmail] = useState(LocalStorageHandler.getUserData()!.email);
-  const userRequestHandler = new UserRequestHandler();
   const toast = useToast();
   const [currentName, setCurrentName] = useState(LocalStorageHandler.getUserData()!.username);
 
@@ -67,10 +64,12 @@ const UserPersonalInfo = ({ user }: { user: UserDataString }) => {
   }
 
   function handleSave() {
+    const userData = LocalStorageHandler.getUserData()!;
     const newData = {
-      id: LocalStorageHandler.getUserData()!.id,
+      id: userData.id,
       username: name,
-      email: email
+      email: email,
+      role: userData.role,
     }
 
     UserRequestHandler.updatePersonalInfo(newData, currentName).then(() => {

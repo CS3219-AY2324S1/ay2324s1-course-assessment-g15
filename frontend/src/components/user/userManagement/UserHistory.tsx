@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack, Text, filter } from "@chakra-ui/react";
 import HistoryOverview from "../../history/HistoryOverview";
 import PastAttempts from "../../history/PastAttempts";
 import HistoryRequestHandler from "../../../handlers/HistoryRequestHandler";
-import { Attempt, HistoryDataString, HistoryResponseString, QuestionString } from "../../../Commons";
+import { Attempt, HistoryResponseString } from "../../../Commons";
 import QuestionRequestHandler from "../../../handlers/QuestionRequestHandler";
 
 const UserHistory = () => {
@@ -52,7 +52,7 @@ const UserHistory = () => {
           setAttempts(updatedAttempts);
         });
       }).catch(e => {
-        console.log(e);
+        console.log((e as Error).message);
       });
   }, []);
 
