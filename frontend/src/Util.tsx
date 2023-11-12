@@ -3,7 +3,6 @@ import Category from "./models/enums/Category";
 import Complexity from "./models/enums/Complexity";
 import { NotificationOptions } from "./Commons";
 import { useEffect } from "react";
-import AuthRequestHandler from "./handlers/AuthRequestHandler";
 
 function enumToString(e: unknown[]) {
   return e.slice(0, e.length / 2);
@@ -43,12 +42,4 @@ export function showSuccess(message: string, toast: (options: UseToastOptions) =
 
 export function showError(message: string, toast: (options: UseToastOptions) => {}) {
   showNotification({ message: message, type: 'error' }, toast);
-}
-
-export function authChecker(setIsAuthenticated: React.Dispatch<React.SetStateAction<null>>) {
-  useEffect(() => {
-    AuthRequestHandler.isAuth()
-      .then(res => { setIsAuthenticated(res.isAuth); })
-      .catch(e => { console.log("Error: " + e.message); });
-  }, []);
 }

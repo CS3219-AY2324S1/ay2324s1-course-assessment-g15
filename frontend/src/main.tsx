@@ -1,9 +1,8 @@
 
 import theme from './theme.js';
-import router from './router.js';
 import ReactDOM from 'react-dom/client'
-import { RouterProvider } from 'react-router-dom';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import QuestionPage from './pages/QuestionPage.js';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,6 +11,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <ChakraProvider theme={theme}>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-    <RouterProvider router={router} />
+    <QuestionPage />
   </ChakraProvider>
 );

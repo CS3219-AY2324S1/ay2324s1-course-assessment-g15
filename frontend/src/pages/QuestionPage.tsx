@@ -138,29 +138,11 @@ const QuestionPage = () => {
     );
   }
 
-  function renderFilterBar() {
-    function onFilter({ categories, complexity }: { categories: string[]; complexity: string }) {
-      const filtered = questions.filter((question) => {
-        const categoryFilter = !categories || categories.every(c => question.categories.includes(c));
-        const complexityFilter = !complexity || question.complexity === complexity;
-        return categoryFilter && complexityFilter;
-      });
-      setFilteredQuestions(filtered);
-      LocalStorageHandler.storeFilterData(categories, complexity, filtered);
-    }
-
-    return (
-      <FilterBar onFilter={onFilter} />
-    );
-  }
-
   function renderPageContent() {
     return (
       <>
-        <NavigationBar index={0} />
         <Center pt={50}>
           <Flex flexDirection="column" alignItems="center">
-            {renderFilterBar()}
             {renderAddQuestionModal()}
             {renderQuestionDetailsModal()}
             {renderEditQuestionModal()}
@@ -180,8 +162,7 @@ const QuestionPage = () => {
     );
   }
 
-  authChecker(setIsAuthenticated);
-  return isAuthenticated ? renderAuthenticatedPage() : <LoadingPage />
+  return renderAuthenticatedPage();
 };
 
 export default QuestionPage;
