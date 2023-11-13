@@ -1,3 +1,4 @@
+import 'dotenv/config'; // Do not standardize, this fixes bug https://stackoverflow.com/questions/62287709/environment-variable-with-dotenv-and-typescript
 import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
@@ -9,13 +10,11 @@ import router from './router'
 import session from 'express-session';
 
 const MongoDBStore = require('connect-mongodb-session')(session);
-const MONGO_URL = "mongodb+srv://peerprep15:CRFVdZNswqisruzv@peerprep.vmiy632.mongodb.net/?retryWrites=true&w=majority";
 
-dotenv.config();
 const app = express();
 
 const store = new MongoDBStore({
-    uri: MONGO_URL,
+    uri: process.env.MONGOURL,
     collection: 'sessions',
 });
 
@@ -43,8 +42,8 @@ server.listen(port, () => {
 });
 
 mongoose.Promise = Promise;
-mongoose.connect(MONGO_URL);
-mongoose.connection.on('error', (e) => {
+mongoose.connect(process.env.MONGOURL.toString());
+mongoose.connection.on('error', (e: any) => {
     console.log('MongoDB connection error.');
     console.log(e);
     process.exit();
