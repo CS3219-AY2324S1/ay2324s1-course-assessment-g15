@@ -1,19 +1,17 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/6BOvYMwN)
-# PeerPrep
+# Instructions for Assignment 3
+Strings for env variables will be given through the 'Sharing Assignment Private Info' assignment.
+## User-service
+1. From the repo root, run `cd backend/user-service`.
+2. Create a .env file with a variable `POSTGRESURL` and `MONGOURL`
+3. Start the service by running `npm run dev`
 
-## How to setup locally
-### Requirements
-- Docker must be installed and running
+## Question-service
+1. From the repo root, run `cd backend/question-service`.
+2. Create a .env with a variable `MONGOURL`
+3. Start the service by running `npm run dev`
 
-1. Copy '.env.sample' and rename it as '.env'
-2. Edit `.env' to fill in the environmental variables.
-3. Start Docker and run `docker-compose up --build` (If developing, always run with `--build`. the `--build` tag creates new images with code changes reflected).
-4. Delete dangling images from your docker images repository.
+## Frontend
+1. From the repo root, run `cd frontend`.
+2. Start the service by running `npm run dev`
 
-## Port mappings:
-- Frontend: 5173
-- Collaboration service: 4000
-- Question service: 8080
-- User service: 5000 for endpoint, 5432 for postgres container
-- Matching Service: 3000 for endpoint, 5672 & 15672 for rabbitMQ container
-- History Service: 7000
