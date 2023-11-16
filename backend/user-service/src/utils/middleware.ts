@@ -12,6 +12,7 @@ export const requireCorrectUser = (req: express.Request, res: express.Response, 
     if (req.session.user.username === req.params.username) {
         next();
     } else {
+        console.log(req.session.user.username, req.params.username);
         res.status(401).json({ message: 'Unauthorized' });
     }
 }

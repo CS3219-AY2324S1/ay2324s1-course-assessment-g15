@@ -11,11 +11,10 @@ import cookieParser from 'cookie-parser';
 import { initAdminProfile } from './utils/initAdmin';
 
 const MongoDBStore = require('connect-mongodb-session')(session);
-const MONGO_URL = "mongodb+srv://peerprep15:CRFVdZNswqisruzv@peerprep.vmiy632.mongodb.net/?retryWrites=true&w=majority";
 const app = express();
 
 const store = new MongoDBStore({
-    uri: MONGO_URL,
+    uri: process.env.MONGOURL,
     collection: 'sessions',
 });
 
