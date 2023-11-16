@@ -19,8 +19,8 @@ class UserRequestHandler {
       await this.client.patch(`/${currentName}`, {
         id: data.id,
         username: data.username,
-        email: data.email
-      });
+        email: data.email,
+      }, { withCredentials: true });
     } catch (e) {
       throw e;
     }
@@ -28,11 +28,11 @@ class UserRequestHandler {
 
   public static async updatePassword(username: string, currentPassword: string, newPassword: string) {
     try {
-      const response = await this.client.get(`/${username}`);
+      const response = await this.client.get(`/${username}`, { withCredentials: true });
       if (response.data.password !== currentPassword) {
         throw Error('Incorrect current password');
       }
-      this.client.patch(`/${username}`, {
+      await this.client.patch(`/${username}`, {
         password: newPassword
       })
     } catch (e) {
@@ -42,7 +42,7 @@ class UserRequestHandler {
 
   public static async deleteUser(username: string) {
     try {
-      await this.client.delete(`/${username}`);
+      await this.client.delete(`/${username}`, { withCredentials: true });
     } catch (e) {
       throw e;
     }
@@ -56,7 +56,7 @@ class UserRequestHandler {
         password: password,
         role: 'USER'
       };
-      await this.client.post('/', body);
+      await this.client.post('/', body, { withCredentials: true });
     } catch (e) {
       throw e;
     }
