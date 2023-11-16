@@ -33,8 +33,10 @@ class UserRequestHandler {
         throw Error('Incorrect current password');
       }
       await this.client.patch(`/${username}`, {
+        id: response.data.id,
+        username: username,
         password: newPassword
-      })
+      }, { withCredentials: true });
     } catch (e) {
       throw e;
     }
