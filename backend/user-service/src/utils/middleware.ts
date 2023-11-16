@@ -1,4 +1,5 @@
 import express from 'express';
+import User from '../models/user';
 
 export const requireAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (req.session.isAuth) {
@@ -8,8 +9,9 @@ export const requireAuth = (req: express.Request, res: express.Response, next: e
     }
 }
 
-export const requireCorrectUser = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (req.session.user.username === req.params.username) {
+export const requireCorrectUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const user = await User.findOne({ where: { username: req.params.username }});
+    if (req.session.user.id === user.dataValues.id) {
         next();
     } else {
         console.log(req.session.user.username, req.params.username);
